@@ -2,24 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/gin-contrib/cors"
-	"github.com/joho/godotenv"
 	"github.com/roh4nyh/iit_bombay/routes"
 )
 
 func main() {
 	gin.SetMode(gin.ReleaseMode)
-
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Printf("error loading .env file: %v", err)
-	}
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
