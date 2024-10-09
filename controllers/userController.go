@@ -122,7 +122,7 @@ func UserSignUp() gin.HandlerFunc {
 // @Router /example/helloworld [get]
 func UserLogIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
 		defer cancel()
 
 		var user models.User
