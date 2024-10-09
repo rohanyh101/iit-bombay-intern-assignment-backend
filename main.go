@@ -14,6 +14,8 @@ import (
 )
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
+
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Printf("error loading .env file: %v", err)
@@ -28,7 +30,7 @@ func main() {
 	app.Use(gin.Logger())
 
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"Access-Control-Allow-Origin", "*"}
+	config.AllowOrigins = []string{"*"} // This will allow all origins
 	config.AllowCredentials = true
 	config.AllowHeaders = []string{"Authorization", "Content-Type"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
