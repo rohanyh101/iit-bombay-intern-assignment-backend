@@ -1,0 +1,171 @@
+# health check
+curl --location --request GET 'http://localhost:8080/health' \
+ --header 'Content-Type: application/json'
+
+###
+
+############### AUTHENTICATION / AUTHORIZATION ROUTES
+
+# user signup
+curl --location --request POST 'http://localhost:8080/users/signup' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{ "username": "manoj", "password": "1212", "role": "LIBRARIAN" }'
+
+###
+
+# user login
+curl --location --request POST 'http://localhost:8080/users/login' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{ "username": "rohan", "password": "1212" }'
+
+###
+
+############## LIBRARIAN ROUTES
+
+# get all books
+curl --location --request GET 'http://localhost:8080/librarian/books' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# insert book
+curl --location --request POST 'http://localhost:8080/librarian/books' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{ "title": "the almanic of naval ravikant", "isbn": "345-0062535002", "author": "Naval Ravikant", "status": "AVAILABLE", "qty": 1 }' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+#  --data-raw '{ "title": "the monk who sold his ferrari", "isbn": "978-0062323421", "author": "Robin Sharma", "status": "AVAILABLE", "qty": 1 }' \
+#  --data-raw '{ "title": "ikigai", "isbn": "978-0062315117", "author": "Hector Garcia", "status": "AVAILABLE", "qty": 1 }' \
+#  --data-raw '{ "title": "The Alchemist", "author": "Paulo Coelho", "isbn": "978-0062315007", "status": "AVAILABLE", "qty": 1 }' \
+
+###
+
+# get a book by isbn
+curl --location --request GET 'http://localhost:8080/librarian/books/345-0062535002' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# update book
+curl --location --request PUT 'http://localhost:8080/librarian/books/345-0062535002' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{ "title": "The almanic of naval ravikant" }' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# delete book
+curl --location --request DELETE 'http://localhost:8080/librarian/books/345-0062535002' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# get all users
+curl --location --request GET 'http://localhost:8080/librarian/users' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyTmFtZSI6Im1hbm9qIiwiUm9sZSI6IkxJQlJBUklBTiIsIklzQWN0aXZlIjpmYWxzZSwiVWlkIjoiNjcwNGY0YjlhNzM0ZjhmYTgzZDM3MDA5IiwiZXhwIjoxNzI4NDY0NDUwfQ.8loxy68auplOzaM0a9VzgyOeF0ksQwPoz9Lwkw90yfs'
+
+###
+
+# create user
+curl --location --request POST 'http://localhost:8080/librarian/users' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{ "username": "manish", "password": "1212", "role": "MEMBER" }' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# get user by id
+curl --location --request GET 'http://localhost:8080/librarian/users/67044140fa1b0a3bc72192f4' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# update user
+curl --location --request PUT 'http://localhost:8080/librarian/users/6704ef4cdc19cd768dcedd51' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{ "is_active": true }' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# de-activate user
+curl --location --request DELETE 'http://localhost:8080/librarian/users/67044140fa1b0a3bc72192f4' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# force delete user
+curl --location --request DELETE 'http://localhost:8080/librarian/users/67044140fa1b0a3bc72192f4/force' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# get all active users
+curl --location --request GET 'http://localhost:8080/librarian/users/active' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# get all deleted users
+curl --location --request GET 'http://localhost:8080/librarian/users/deleted' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+# get all borrowed books by a single user
+curl --location --request GET 'http://localhost:8080/librarian/users/6704f441a734f8fa83d37008/borrowed' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbm9qIiwicm9sZSI6IkxJQlJBUklBTiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNGI5YTczNGY4ZmE4M2QzNzAwOSIsImV4cCI6MTcyODUxMTExMH0.Jf6ujnmK6qRqUfB3AOPd-8P4bxKI2p9Q6SArTBHl3gQ'
+
+###
+
+################ MEMBER ROUTES
+
+# get all books
+curl --location --request GET 'http://localhost:8080/member/books' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvaGFuIiwicm9sZSI6Ik1FTUJFUiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNDQxYTczNGY4ZmE4M2QzNzAwOCIsImV4cCI6MTcyODQ2Njc1NH0.fYsKVM02KjNLHlN8MEH9BuZWULnOAbjdkyusPKh4iL4'
+
+###
+
+# get a book by isbn 
+curl --location --request GET 'http://localhost:8080/member/books/978-0062315117' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyTmFtZSI6InJvaGFuIiwiUm9sZSI6Ik1FTUJFUiIsIklzQWN0aXZlIjpmYWxzZSwiVWlkIjoiNjcwNGY0NDFhNzM0ZjhmYTgzZDM3MDA4IiwiZXhwIjoxNzI4NDY0OTI2fQ.eDKRN9yMy_lOaTglYbzrUop9VHI2PEL82E1xIhiW4hg'
+
+###
+
+# borrow a book
+curl --location --request POST 'http://localhost:8080/member/books/borrow/978-0062315117' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvaGFuIiwicm9sZSI6Ik1FTUJFUiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNDQxYTczNGY4ZmE4M2QzNzAwOCIsImV4cCI6MTcyODUxMjY4Nn0.XiYKIW0yLLlJdd8q-DYrOdjmscrIhWoFdlnJ-ndL_UU'
+
+###
+
+# return a book
+curl --location --request PUT 'http://localhost:8080/member/books/return/978-0062315117' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvaGFuIiwicm9sZSI6Ik1FTUJFUiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNDQxYTczNGY4ZmE4M2QzNzAwOCIsImV4cCI6MTcyODUxMjY4Nn0.XiYKIW0yLLlJdd8q-DYrOdjmscrIhWoFdlnJ-ndL_UU'
+
+###
+
+# get all borrowed books
+curl --location --request GET 'http://localhost:8080/member/books/borrowed' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvaGFuIiwicm9sZSI6Ik1FTUJFUiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNDQxYTczNGY4ZmE4M2QzNzAwOCIsImV4cCI6MTcyODUxMjY4Nn0.XiYKIW0yLLlJdd8q-DYrOdjmscrIhWoFdlnJ-ndL_UU'
+ 
+###
+
+# delete account
+curl --location --request DELETE 'http://localhost:8080/member/account' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvaGFuIiwicm9sZSI6Ik1FTUJFUiIsImlzX2FjdGl2ZSI6ZmFsc2UsInVpZCI6IjY3MDRmNDQxYTczNGY4ZmE4M2QzNzAwOCIsImV4cCI6MTcyODUxMjY4Nn0.XiYKIW0yLLlJdd8q-DYrOdjmscrIhWoFdlnJ-ndL_UU'
+ 
