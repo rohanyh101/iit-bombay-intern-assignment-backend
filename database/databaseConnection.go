@@ -7,17 +7,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func DBInstance() *mongo.Client {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Printf("error loading .env file: %v", err)
-	}
-
 	MONGO_URI := os.Getenv("MONGO_URI")
 	if MONGO_URI == "" {
 		log.Fatal("MONGO_URI environment variable is not set")
