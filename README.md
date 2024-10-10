@@ -2,12 +2,11 @@
 
 ## Description
 
-The Library Management System is a web application designed to streamline the management of library resources, including books, members, and transactions. This system enables librarians to efficiently manage book inventory, handle member registrations, and track borrowing and returning of books. With a user-friendly interface, both librarians and members can interact seamlessly with the system, ensuring a smooth and organized library experience.
+The Library Management System is a web application designed to streamline the management of library resources, including books, members, and transactions. This system enables librarians to efficiently manage book inventory, handle member registrations, and track the borrowing and returning of books. With a user-friendly interface, both librarians and members can interact seamlessly with the system, ensuring a smooth and organized library experience.
 
 ## Database Diagram
 
-![Screenshot (140)](https://github.com/user-attachments/assets/f1066531-3d21-4483-9efb-2d551d636752)
-
+![Screenshot (141)](https://github.com/user-attachments/assets/83b272e1-9a0c-438d-be3c-4fe00c08b7e6)
 
 ## Features
 
@@ -397,7 +396,7 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
 
 ## MEMBER ROUTES
 
-1. **force delete User => `DELETE   /librarian/users/:user_id/force`**
+1. **get all Books => `GET    /member/books`**
 ```bash
   #request
   curl --location --request GET 'http://localhost:8080/member/books' \
@@ -405,7 +404,128 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
  --header 'Authorization: Bearer <token>'
 
   #response
+[
+  {
+    "id": "67053e06bf3020c63f51ffe7",
+    "isbn": "978-0062315007",
+    "title": "The Alchemist",
+    "author": "Paulo Coelho",
+    "status": "AVAILABLE",
+    "qty": 1,
+    "created_at": "2024-10-08T14:13:26.679Z",
+    "updated_at": "2024-10-08T14:13:26.679Z"
+  },
+  {
+    "id": "6705fda074919c7ad793d97c",
+    "isbn": "978-0062323421",
+    "title": "the monk who sold his ferrari",
+    "author": "Robin Sharma",
+    "status": "AVAILABLE",
+    "qty": 1,
+    "created_at": "2024-10-09T03:50:56.337Z",
+    "updated_at": "2024-10-09T03:50:56.337Z"
+  }
+]
+```
+
+2. **get a single Book => `GET    /member/books/:isbn`**
+```bash
+  #request
+  curl --location --request GET 'http://localhost:8080/member/books/978-0062315117' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer <token>'
+
+  #response
 {
-  "message": "user deleted successfully"
+  "id": "6705dc3a13304f2b56ce3262",
+  "isbn": "978-0062315117",
+  "title": "ikigai",
+  "author": "Hector Garcia",
+  "status": "OUT_OF_STOCK",
+  "qty": 0,
+  "borrowed_by": "6704f441a734f8fa83d37008",
+  "created_at": "2024-10-09T01:28:26.216Z",
+  "updated_at": "2024-10-09T05:39:01.766Z"
 }
 ```
+
+3. **borrow a Book => `POST   /member/books/borrow/:isbn`**
+```bash
+  #request
+  curl --location --request POST 'http://localhost:8080/member/books/borrow/978-0062315117' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer <token>'
+
+  #response
+{
+  message: "book borrowed successfully"
+}
+```
+
+4. **return a Book => `PUT    /member/books/return/:isbn`**
+```bash
+  #request
+  curl --location --request PUT 'http://localhost:8080/member/books/return/978-0062315117' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer <token>'
+
+  #response
+{
+  message: "book returned successfully"
+}
+```
+
+5. **get all borrowed books => `GET    /member/books/borrowed`**
+```bash
+  #request
+  curl --location --request GET 'http://localhost:8080/member/books/borrowed' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer <token>'
+
+  #response
+[
+  {
+    "id": "67053e06bf3020c63f51ffe7",
+    "isbn": "978-0062315007",
+    "title": "The Alchemist",
+    "author": "Paulo Coelho",
+    "status": "AVAILABLE",
+    "qty": 1,
+    "created_at": "2024-10-08T14:13:26.679Z",
+    "updated_at": "2024-10-08T14:13:26.679Z"
+  },
+  {
+    "id": "6705fda074919c7ad793d97c",
+    "isbn": "978-0062323421",
+    "title": "the monk who sold his ferrari",
+    "author": "Robin Sharma",
+    "status": "AVAILABLE",
+    "qty": 1,
+    "created_at": "2024-10-09T03:50:56.337Z",
+    "updated_at": "2024-10-09T03:50:56.337Z"
+  }
+]
+```
+
+6. **delete my account => `DELETE    /member/account`**
+```bash
+  #request
+  curl --location --request DELETE 'http://localhost:8080/member/account' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Bearer <token>'
+
+  #response
+{
+  message: "user de-activated successfully"
+}
+```
+
+## Contributing
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/YourFeature`
+3. Make your changes and commit them: `git commit -m 'Add new feature`
+4. Push to the branch: `git push origin feature/YourFeature`
+5. Open a Pull Request
+
