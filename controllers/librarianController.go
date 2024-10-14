@@ -11,13 +11,14 @@ import (
 	"github.com/roh4nyh/iit_bombay/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var bookValidate = validator.New()
 
 func AddBook() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var book models.Book
@@ -49,7 +50,7 @@ func UpdateBook() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		isbn := c.Param("isbn")
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var book models.Book
@@ -71,6 +72,10 @@ func UpdateBook() gin.HandlerFunc {
 
 		if book.Status != nil {
 			updateObj["status"] = book.Status
+		}
+
+		if book.Qty != 0 {
+			updateObj["qty"] = book.Qty
 		}
 
 		if book.ISBN != nil {
@@ -113,12 +118,12 @@ func DeleteBook() gin.HandlerFunc {
 
 func GetUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var users []models.User
 
-		cursor, err := UserCollection.Find(ctx, bson.M{"role": models.ROLE_MEMBER})
+		cursor, err := UserCollection.Find(ctx, bson.M{})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while listing users"})
 			return
@@ -147,7 +152,7 @@ func GetUser() gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var user models.User
@@ -167,7 +172,7 @@ func GetUser() gin.HandlerFunc {
 
 func AddUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var user models.User
@@ -229,7 +234,7 @@ func UpdateUser() gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var user models.User
@@ -326,21 +331,42 @@ func DeleteUser() gin.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
-		filter := bson.M{"_id": bson.M{"$eq": userId}}
-
-		_, err = UserCollection.DeleteOne(ctx, filter)
+		// Check if the user is a librarian
+		var user models.User
+		err = UserCollection.FindOne(ctx, bson.M{"_id": userId}).Decode(&user)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while deleting user"})
+			if err == mongo.ErrNoDocuments {
+				c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching user"})
+			}
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
+		if *user.Role == models.ROLE_LIBRARIAN {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Cannot delete a librarian"})
+			return
+		}
+
+		filter := bson.M{"_id": userId}
+		result, err := UserCollection.DeleteOne(ctx, filter)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Error occurred while deleting user"})
+			return
+		}
+
+		if result.DeletedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 	}
 }
 
 func GetActiveUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var users []models.User
@@ -367,7 +393,7 @@ func GetActiveUsers() gin.HandlerFunc {
 
 func GetNonActiveUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var users []models.User
@@ -401,7 +427,7 @@ func GetTransactionHistory() gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var borrowHistory []models.BorrowHistory

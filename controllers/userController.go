@@ -47,17 +47,9 @@ func VerifyPassword(userPassword, foundUserPassword string) (bool, string) {
 	return check, msg
 }
 
-// @Summary Add a new pet to the store
-// @Description get string by ID
-// @ID get-string-by-int
-// @Accept  json
-// @Produce  json
-// @Param   some_id     path    int     true        "Some ID"
-// @Success 200 {string} string  "ok"
-// @Router /string/{some_id} [get]
 func UserSignUp() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 		defer cancel()
 
 		var user models.User
@@ -112,17 +104,9 @@ func UserSignUp() gin.HandlerFunc {
 	}
 }
 
-// PingExample godoc
-// @Summary ping example
-// @Schemes
-// @Description do ping
-// @Accept json
-// @Produce json
-// @Success 200 {string} Helloworld
-// @Router /example/helloworld [get]
 func UserLogIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 		defer cancel()
 
 		var user models.User
@@ -135,7 +119,7 @@ func UserLogIn() gin.HandlerFunc {
 
 		err := UserCollection.FindOne(ctx, bson.M{"username": user.Username}).Decode(&foundUser)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "email or password is incorrect"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "username or password is incorrect"})
 			return
 		}
 

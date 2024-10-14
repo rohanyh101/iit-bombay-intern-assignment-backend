@@ -1,6 +1,6 @@
 module github.com/roh4nyh/iit_bombay
 
-go 1.23.0
+go 1.23
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

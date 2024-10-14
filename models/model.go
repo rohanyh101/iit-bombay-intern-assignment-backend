@@ -28,16 +28,16 @@ type User struct {
 }
 
 type Book struct {
-	ID         primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
-	ISBN       *string             `bson:"isbn" json:"isbn" validate:"required"`
-	Title      *string             `bson:"title" json:"title" validate:"required"`
-	Author     *string             `bson:"author" json:"author" validate:"required"`
-	Status     *string             `bson:"status" json:"status" validate:"required,eq=AVAILABLE|eq=OUT_OF_STOCK"`
-	Qty        int                 `bson:"qty" json:"qty" validate:"required"`
-	BorrowedBy *primitive.ObjectID `bson:"borrowed_by,omitempty" json:"borrowed_by,omitempty"` // User ID of the member borrowing the book
-	CreatedAt  time.Time           `bson:"created_at" json:"created_at"`
-	UpdatedAt  time.Time           `bson:"updated_at" json:"updated_at"`
-	BookID     string              `bson:"book_id,omitempty" json:"book_id,omitempty"`
+	ID     primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	ISBN   *string            `bson:"isbn" json:"isbn" validate:"required"`
+	Title  *string            `bson:"title" json:"title" validate:"required"`
+	Author *string            `bson:"author" json:"author" validate:"required"`
+	Status *string            `bson:"status" json:"status" validate:"required,eq=AVAILABLE|eq=OUT_OF_STOCK"`
+	Qty    int                `bson:"qty" json:"qty" validate:"required"`
+	// BorrowedBy *primitive.ObjectID `bson:"borrowed_by,omitempty" json:"borrowed_by,omitempty"` // User ID of the member borrowing the book
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
+	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
+	BookID    string    `bson:"book_id,omitempty" json:"book_id,omitempty"`
 }
 
 type BorrowHistory struct {
@@ -46,6 +46,6 @@ type BorrowHistory struct {
 	BookID     primitive.ObjectID `bson:"book_id" json:"book_id"` // The book being borrowed
 	BorrowedAt time.Time          `bson:"borrowed_at" json:"borrowed_at"`
 	ReturnedAt time.Time          `bson:"returned_at,omitempty" json:"returned_at,omitempty"` // Nullable if not yet returned
-	Status     *string            `bson:"status,omitempty" json:"status,omitempty" validate:"eq=RETURNED|eq=BORROWED"`
+	Status     string             `bson:"status,omitempty" json:"status,omitempty" validate:"eq=RETURNED|eq=BORROWED"`
 	BorrowID   string             `bson:"borrow_id,omitempty" json:"borrow_id,omitempty"`
 }

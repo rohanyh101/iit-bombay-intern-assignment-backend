@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -24,7 +25,7 @@ var BorrowHistoryCollection *mongo.Collection = database.OpenCollection(Database
 
 func GetBooks() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var books []models.Book
@@ -52,7 +53,7 @@ func GetBook() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		isbn := c.Param("isbn")
 
-		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var book models.Book
@@ -80,24 +81,26 @@ func DeActivateMember() gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		// make sure user returns all borrowed books before deactivating
-		var borrowedBooks []models.Book
-		cursor, err := BookCollection.Find(ctx, bson.M{"borrowed_by": memberId})
+		var borrowedBooksHistory []models.BorrowHistory
+		cursor, err := BorrowHistoryCollection.Find(ctx, bson.M{"user_id": memberId, "status": models.STATUS_BORROWED})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while listing borrowed books"})
 			return
 		}
 
-		if err = cursor.All(ctx, &borrowedBooks); err != nil {
+		if err = cursor.All(ctx, &borrowedBooksHistory); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while decoding borrowed books data"})
 			return
 		}
 
-		if len(borrowedBooks) > 0 {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "return all borrowed books before de-activating account"})
+		log.Println(borrowedBooksHistory)
+
+		if len(borrowedBooksHistory) > 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Return all borrowed books before deactivating user"})
 			return
 		}
 
@@ -105,7 +108,6 @@ func DeActivateMember() gin.HandlerFunc {
 		updateObj := bson.M{}
 
 		updateObj["is_active"] = false
-
 		updateObj["updated_at"] = time.Now()
 
 		filter := bson.M{"_id": bson.M{"$eq": memberId}}
@@ -130,20 +132,33 @@ func BorrowedBooks() gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
-		var borrowedBooks []models.Book
+		var borrowedBooksHistory []models.BorrowHistory
 
-		cursor, err := BookCollection.Find(ctx, bson.M{"borrowed_by": memberId})
+		cursor, err := BorrowHistoryCollection.Find(ctx, bson.M{"user_id": memberId, "status": models.STATUS_BORROWED})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while listing borrowed books"})
 			return
 		}
 
-		if err = cursor.All(ctx, &borrowedBooks); err != nil {
+		if err = cursor.All(ctx, &borrowedBooksHistory); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while decoding borrowed books data"})
 			return
+		}
+
+		var borrowedBooks []models.Book
+
+		for _, borrowedBook := range borrowedBooksHistory {
+			var book models.Book
+			err := BookCollection.FindOne(ctx, bson.M{"_id": borrowedBook.BookID}).Decode(&book)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while fetching borrowed book"})
+				return
+			}
+
+			borrowedBooks = append(borrowedBooks, book)
 		}
 
 		// Return an empty array if no books have been borrowed
@@ -167,7 +182,7 @@ func BorrowBook() gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var book models.Book
@@ -189,8 +204,10 @@ func BorrowBook() gin.HandlerFunc {
 
 		updateObj := bson.M{}
 
-		updateObj["status"] = models.STATUS_BORROWED
-		updateObj["borrowed_by"] = memberId
+		// should remove
+		// updateObj["status"] = models.STATUS_BORROWED
+		// should remove
+		// updateObj["borrowed_by"] = memberId
 		updateObj["updated_at"] = time.Now()
 		updateObj["qty"] = book.Qty - 1
 
@@ -207,12 +224,11 @@ func BorrowBook() gin.HandlerFunc {
 			return
 		}
 
-		bbook := models.STATUS_BORROWED
 		borrowHistory := models.BorrowHistory{
 			UserID:     memberId,
 			BookID:     book.ID,
 			BorrowedAt: time.Now(),
-			Status:     &bbook,
+			Status:     models.STATUS_BORROWED,
 		}
 
 		_, err = BorrowHistoryCollection.InsertOne(ctx, borrowHistory)
@@ -251,7 +267,7 @@ func ReturnBook() gin.HandlerFunc {
 			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
 		var book models.Book
@@ -261,21 +277,11 @@ func ReturnBook() gin.HandlerFunc {
 			return
 		}
 
-		if book.Status == nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "book not found in your borrowed list"})
-			return
-		}
-
-		if *book.Status == models.STATUS_AVAILABLE {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "book is not yet borrowed by you"})
-			return
-		}
-
 		// Update book
 		updateObj := bson.M{}
 
+		// updateObj["borrowed_by"] = nil
 		updateObj["status"] = models.STATUS_AVAILABLE
-		updateObj["borrowed_by"] = nil
 		updateObj["updated_at"] = time.Now()
 		updateObj["qty"] = book.Qty + 1
 

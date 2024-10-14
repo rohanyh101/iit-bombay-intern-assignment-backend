@@ -5,25 +5,30 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	"github.com/gin-contrib/cors"
 	"github.com/roh4nyh/iit_bombay/routes"
 )
 
 func main() {
-	gin.SetMode(gin.ReleaseMode)
+	// err := godotenv.Load(".env")
+	// if err != nil {
+	// 	log.Printf("error loading .env file: %v", err)
+	// }
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "8080"
 	}
 
+	gin.SetMode(gin.ReleaseMode)
+
 	app := gin.New()
 	app.Use(gin.Logger())
 
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"*"} // This will allow all origins
+	config.AllowOrigins = []string{"*"}
 	config.AllowCredentials = true
 	config.AllowHeaders = []string{"Authorization", "Content-Type"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
