@@ -33,10 +33,26 @@ func AddBook() gin.HandlerFunc {
 			return
 		}
 
+		if book.Qty <= 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Quantity should be greater than 0"})
+			return
+		}
+
+		count, err := BookCollection.CountDocuments(ctx, bson.M{"isbn": book.ISBN})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while checking for book isbn"})
+			return
+		}
+
+		if count > 0 {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "this book already exists"})
+			return
+		}
+
 		book.CreatedAt = time.Now()
 		book.UpdatedAt = time.Now()
 
-		_, err := BookCollection.InsertOne(ctx, book)
+		_, err = BookCollection.InsertOne(ctx, book)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while adding book"})
 			return
@@ -80,6 +96,11 @@ func UpdateBook() gin.HandlerFunc {
 
 		if book.ISBN != nil {
 			updateObj["isbn"] = book.ISBN
+		}
+
+		if book.Qty <= 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Quantity should be greater than 0"})
+			return
 		}
 
 		updateObj["updated_at"] = time.Now()
@@ -199,11 +220,11 @@ func AddUser() gin.HandlerFunc {
 			return
 		}
 
-		isActive := false
-		mRole := models.ROLE_MEMBER
+		tempRole := models.ROLE_MEMBER
+		tempIsActive := false
 
-		user.Role = &mRole
-		user.IsActive = &isActive
+		user.Role = &tempRole
+		user.IsActive = &tempIsActive
 		user.CreatedAt = time.Now()
 		user.UpdatedAt = time.Now()
 		user.ID = primitive.NewObjectID()

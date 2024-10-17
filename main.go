@@ -8,6 +8,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
+	"github.com/roh4nyh/iit_bombay/middleware"
 	"github.com/roh4nyh/iit_bombay/routes"
 )
 
@@ -34,15 +35,21 @@ func main() {
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	app.Use(cors.New(config))
 
-	routes.AuthRoutes(app)
-
 	app.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"success": "iit bombay server is up and running..."})
 	})
 
+	routes.AuthRoutes(app)
+
 	routes.LibrarianRoutes(app)
 
 	routes.MemberRoutes(app)
+
+	app.GET("/api/v1/whoami", middleware.Authenticate(), func(c *gin.Context) {
+		username := c.GetString("username")
+		role := c.GetString("role")
+		c.JSON(http.StatusOK, gin.H{"username": username, "role": role})
+	})
 
 	app.Run(fmt.Sprintf(":%s", PORT))
 }

@@ -87,8 +87,7 @@ func UserSignUp() gin.HandlerFunc {
 		user.UpdatedAt, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		user.ID = primitive.NewObjectID()
 		user.UserID = user.ID.Hex()
-		isActive := false
-		user.IsActive = &isActive
+		*user.IsActive = false
 
 		token, _ := helper.GenerateUserToken(*user.Username, user.UserID, *user.Role, *user.IsActive)
 		user.Token = &token
